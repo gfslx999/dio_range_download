@@ -3,7 +3,11 @@
 A download tool library that supports resumable downloading and segmented downloading.
 https://pub.dev/packages/dio_range_download
 
+### 当前插件来自 [dio_range_download](https://pub.flutter-io.cn/packages/dio_range_download) ，仅对其做了空安全的支持
+### It's from: [dio_range_download](https://pub.flutter-io.cn/packages/dio_range_download) , only support null safety
+
 ## Theory
+
 This library is based on the range protocol header of the http1.1 version to achieve segmented download and resumable download.
 ```
 headers: {"range": "bytes=$start-$end"},

@@ -5,13 +5,13 @@ import 'package:dio/dio.dart';
 
 class RangeDownload {
   static Future<Response> downloadWithChunks(
-    url,
-    savePath, {
+    String url,
+    String savePath, {
     bool isRangeDownload = true,
-    ProgressCallback onReceiveProgress,
+    ProgressCallback? onReceiveProgress,
     int maxChunk = 6,
-    Dio dio,
-    CancelToken cancelToken,
+    Dio? dio,
+    CancelToken? cancelToken,
   }) async {
     const firstChunkSize = 102;
 
@@ -87,7 +87,7 @@ class RangeDownload {
       }
       progress.add(initLength);
       progressInit.add(initLength);
-      return dio.download(
+      return dio!.download(
         url,
         path,
         onReceiveProgress: createCallback(no),
@@ -99,16 +99,17 @@ class RangeDownload {
     }
 
     if (isRangeDownload) {
-      Response response =
+      Response? response =
           await downloadChunk(url, 0, firstChunkSize, 0, isMerge: false);
       if (response.statusCode == 206) {
         print("This http protocol support range download");
-        total = int.parse(response.headers
+        final headerLast = response.headers
             .value(HttpHeaders.contentRangeHeader)
-            .split("/")
-            .last);
+            ?.split("/")
+            .last ?? "";
+        total = int.parse(headerLast);
         int reserved = total -
-            int.parse(response.headers.value(HttpHeaders.contentLengthHeader));
+            int.parse(response.headers.value(HttpHeaders.contentLengthHeader) ?? "0");
         int chunk = (reserved / firstChunkSize).ceil() + 1;
         if (chunk > 1) {
           int chunkSize = firstChunkSize;
@@ -134,6 +135,7 @@ class RangeDownload {
           statusCode: 200,
           statusMessage: "Download sucess.",
           data: "Download sucess.",
+          requestOptions: RequestOptions(path: url)
         );
       } else if (response.statusCode == 200) {
         print(
